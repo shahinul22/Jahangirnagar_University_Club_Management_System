@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        Clubs
+      {% endblock %}
+    </title>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet" />
+    {% comment %}Tailwind CSS + daisyUI via CDN{% endcomment %}
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.20/dist/full.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        plugins: [tailwindcss.daisyui]
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/daisyui@latest"></script>
+  </head>
+  <body class="bg-base-200 min-h-screen flex flex-col">
+    <nav class="bg-base-100 shadow-md p-4 flex justify-between items-center">
+      <a href="{% url 'dashboard' %}" class="text-xl font-bold">JU Clubs</a>
+      {% if user.is_authenticated %}
+        <div class="space-x-4">
+          <span class="text-sm text-gray-500">Hi, {{ user.username }}</span>
+          <a href="{% url 'logout' %}" class="btn btn-sm btn-error">Logout</a>
+        </div>
+      {% endif %}
+    </nav>
+
+    <main class="flex-grow p-6">
+      {% block content %}
+
+      {% endblock %}
+    </main>
+
+    <footer class="bg-base-100 text-center p-4 text-sm text-gray-500">&copy; 2025 Jahangirnagar University Club Management System</footer>
+  </body>
+</html>

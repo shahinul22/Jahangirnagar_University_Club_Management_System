@@ -1,0 +1,23 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
+    <h1 class="text-3xl font-bold mb-2">Welcome, {{ user.username }} 👋</h1>
+
+    {% if user.is_organizer %}
+        <p class="text-lg text-primary mb-4">You are an Organizer.</p>
+    {% elif user.is_regular_user %}
+        <p class="text-lg text-success mb-4">You are a Regular User.</p>
+    {% endif %}
+
+    <div class="grid gap-4">
+        <div class="card bg-base-200 p-4">
+            <h2 class="text-xl font-semibold mb-2">Your Dashboard</h2>
+            <p>Here you’ll see events, notifications and club updates soon.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
