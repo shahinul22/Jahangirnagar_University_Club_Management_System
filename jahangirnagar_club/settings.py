@@ -45,6 +45,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "jahangirnagar_club.urls"
+LOGOUT_REDIRECT_URL = '/'
+
 
 TEMPLATES = [
     {
