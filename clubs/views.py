@@ -1,70 +1,163 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.shortcuts import (
+    render, 
+    redirect, 
+    get_object_or_404
+)
+from django.http import HttpResponseForbidden
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, get_user_model, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .forms import OrganizerRegisterForm, RegularUserRegisterForm
 
+CustomUser = get_user_model()
 
-# Home View - Redirects to the login page if user is not logged in
+# =========================
+# Public Views (No Login)
+# =========================
+
 def home(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')  # If user is already logged in, send them to the dashboard
-    return render(request, 'clubs/home.html')  # Render the home page for non-authenticated users
+        return redirect('dashboard')
+    return render(request, 'clubs/home.html')
 
 
-# Organizer Registration View
 def register_organizer(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')  # If the user is logged in, redirect them to the dashboard
-    
+        return redirect('dashboard')
+
     if request.method == 'POST':
         form = OrganizerRegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)  # Log in the user after successful registration
-            return redirect('dashboard')  # Redirect to dashboard after registration
+            user = form.save(commit=False)
+            user.is_organizer = True
+            user.organizer_approved = False
+            user.save()
+            messages.info(request, 'Your request has been submitted. Wait for admin approval.')
+            return redirect('home')
     else:
         form = OrganizerRegisterForm()
-    
+
     return render(request, 'clubs/register_organizer.html', {'form': form})
 
 
-# Regular User Registration View
 def register_regular(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')  # If the user is logged in, redirect them to the dashboard
-    
+        return redirect('dashboard')
+
     if request.method == 'POST':
         form = RegularUserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Log in the user after successful registration
-            return redirect('dashboard')  # Redirect to dashboard after registration
+            login(request, user)
+            return redirect('dashboard')
     else:
         form = RegularUserRegisterForm()
-    
+
     return render(request, 'clubs/register_regular.html', {'form': form})
 
 
-# Login View - Redirects to dashboard if user is already logged in
-def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')  # If the user is already logged in, redirect them to the dashboard
-    
+# =========================
+# Login Views
+# =========================
+
+def admin_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)  # Log in the user after successful authentication
-            return redirect('dashboard')  # Redirect to the dashboard after logging in
+            if user.is_superuser:
+                login(request, user)
+                return redirect('admin_dashboard')  # Updated path to admin-panel/dashboard/
+            else:
+                messages.error(request, "You do not have permission to access this page.")
+        else:
+            messages.error(request, "Invalid credentials.")
     else:
         form = AuthenticationForm()
-    
-    return render(request, 'clubs/login.html', {'form': form})
+
+    return render(request, 'clubs/admin_login.html', {'form': form})
 
 
-# Dashboard View - This is where the logged-in user is redirected after login
+def organizer_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user.is_organizer and user.organizer_approved:
+                login(request, user)
+                return redirect('organizer_dashboard')
+            else:
+                messages.error(request, "You do not have permission to access this page.")
+        else:
+            messages.error(request, "Invalid credentials.")
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'clubs/organizer_login.html', {'form': form})
+
+
+def user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            messages.error(request, "Invalid credentials.")
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'clubs/user_login.html', {'form': form})
+
+
+# =========================
+# Logged-In User Views
+# =========================
+
 @login_required
 def dashboard(request):
-    return render(request, 'clubs/dashboard.html')  # Render the dashboard page for authenticated users
+    if request.user.is_organizer and request.user.organizer_approved:
+        return redirect('organizer_dashboard')
+    return render(request, 'clubs/dashboard.html')
+
+
+@login_required
+def organizer_dashboard(request):
+    if not request.user.is_organizer or not request.user.organizer_approved:
+        return HttpResponseForbidden("You are not approved as an organizer.")
+    return render(request, 'clubs/organizer_dashboard.html')
+
+
+# =========================
+# Admin Views
+# =========================
+User = get_user_model()
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_dashboard(request):
+    # Fetch the updated list of pending organizers
+    pending = User.objects.filter(is_organizer=True, organizer_approved=False)
+    return render(request, 'clubs/admin_dashboard.html', {'pending': pending})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def pending_organizers(request):
+    pending = CustomUser.objects.filter(is_organizer=True, organizer_approved=False)
+    return render(request, 'clubs/pending_organizers.html', {'pending': pending})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def approve_organizer(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id, is_organizer=True, organizer_approved=False)
+    user.organizer_approved = True
+    user.save()
+    messages.success(request, f"{user.username} has been approved as an organizer.")
+    return redirect('pending_organizers')  # This will redirect to the 'pending_organizers' view
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')  # Redirect to a login view that exists in your urls.py

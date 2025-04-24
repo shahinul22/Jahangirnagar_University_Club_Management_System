@@ -96,6 +96,22 @@
               <button type="submit" class="btn btn-sm btn-error">Logout</button>
             </form>
           </div>
+        {% else %}
+          <!-- Login Button -->
+          <div class="dropdown dropdown-end">
+            <button tabindex="0" class="btn btn-sm btn-primary">Login</button>
+            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+              <li>
+                <a href="{% url 'admin_login' %}">Admin Login</a>
+              </li>
+              <li>
+                <a href="{% url 'organizer_login' %}">Organizer Login</a>
+              </li>
+              <li>
+                <a href="{% url 'user_login' %}">User Login</a>
+              </li>
+            </ul>
+          </div>
         {% endif %}
       </div>
     </div>

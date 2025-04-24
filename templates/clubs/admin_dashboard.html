@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+<p>Welcome, Admin!</p>
+
+<h2 class="text-xl mt-6 mb-2">Pending Organizers</h2>
+<ul class="list-disc pl-5 space-y-2">
+    {% for user in pending %}
+        <li>
+            <span>{{ user.username }} ({{ user.email }})</span>
+            — <a href="{% url 'approve_organizer' user.id %}" class="text-blue-500 hover:underline">Approve</a>
+        </li>
+    {% empty %}
+        <li>No pending organizer requests.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

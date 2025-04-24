@@ -1,0 +1,19 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Organizer Dashboard{% endblock %}
+
+{% block content %}
+  <h2 class="text-2xl font-bold mb-6">Welcome, {{ request.user.username }}</h2>
+
+  <div class="space-y-4">
+    <div class="p-6 bg-base-100 shadow-lg rounded-box">
+      <h3 class="text-lg font-semibold mb-2">Club Management Tools</h3>
+      <ul class="list-disc list-inside text-sm">
+        <li><a href="#" class="link link-primary">Create New Event</a></li>
+        <li><a href="#" class="link link-primary">Manage Club Members</a></li>
+        <li><a href="#" class="link link-primary">Send Notifications</a></li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}
