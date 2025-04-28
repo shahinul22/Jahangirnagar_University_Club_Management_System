@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
       {% block title %}
-        Clubs
+        JU Clubs
       {% endblock %}
     </title>
 
@@ -26,38 +26,40 @@
         backdrop-filter: blur(8px);
         border: 1px solid rgba(255, 255, 255, 0.3);
       }
-
+      
       .fade-in {
         animation: fadeIn 0.4s ease-out forwards;
       }
-
+      
       .hover-glow {
         transition: all 0.3s ease;
       }
-
+      
       .hover-glow:hover {
         box-shadow: 0 0 10px rgba(59, 130, 246, 0.6), 0 0 20px rgba(59, 130, 246, 0.4);
         transform: translateY(-2px);
       }
-
+      
       /* Ensuring text is visible on white background */
       body {
         background-color: #f8fafc; /* White background */
         color: #333; /* Dark text for better contrast */
       }
-
-      .navbar, .footer {
+      
+      .navbar,
+      .footer {
         background-color: #ffffff;
       }
-
-      .navbar a, .navbar li a {
+      
+      .navbar a,
+      .navbar li a {
         color: #333;
       }
-
+      
       .dropdown-content a {
         color: #333;
       }
-
+      
       .dropdown-content a:hover {
         color: #fff;
         background-color: #2563eb; /* Tailwind Blue */
@@ -70,7 +72,7 @@
           extend: {}
         },
         plugins: [daisyui]
-      };
+      }
     </script>
   </head>
 
@@ -127,9 +129,7 @@
                 <div class="p-4 border-t border-base-300 flex items-center space-x-2">
                   <form action="{% url 'logout' %}" method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-error w-full hover-glow">
-                      <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
-                    </button>
+                    <button type="submit" class="btn btn-sm btn-error w-full hover-glow"><i class="fa-solid fa-right-from-bracket mr-2"></i> Logout</button>
                   </form>
                 </div>
               {% endif %}
@@ -154,6 +154,7 @@
       </div>
 
       <!-- Navbar End (Profile/Login) -->
+      <!-- Navbar End (Profile/Login and Register) -->
       <div class="navbar-end flex items-center space-x-4">
         {% if user.is_authenticated %}
           <!-- User Profile Dropdown -->
@@ -181,31 +182,48 @@
               <li>
                 <form action="{% url 'logout' %}" method="POST">
                   {% csrf_token %}
-                  <button type="submit" class="w-full text-left flex items-center hover-glow">
-                    <i class="fa-solid fa-right-from-bracket mr-2"></i>Logout
-                  </button>
+                  <button type="submit" class="w-full text-left flex items-center hover-glow"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
                 </form>
               </li>
             </ul>
           </div>
         {% else %}
-          <!-- Login Dropdown for Guests -->
-          <div class="dropdown dropdown-end">
-            <button tabindex="0" class="btn btn-sm btn-primary flex items-center space-x-2 hover-glow">
-              <i class="fa-solid fa-arrow-right-to-bracket"></i>
-              <span>Login</span>
-            </button>
-            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-              <li>
-                <a class="hover-glow" href="{% url 'admin_login' %}">Admin Login</a>
-              </li>
-              <li>
-                <a class="hover-glow" href="{% url 'organizer_login' %}">Organizer Login</a>
-              </li>
-              <li>
-                <a class="hover-glow" href="{% url 'user_login' %}">User Login</a>
-              </li>
-            </ul>
+          <!-- Login and Register Buttons for Guests -->
+          <div class="flex items-center space-x-2">
+            <!-- Login Dropdown -->
+            <div class="dropdown dropdown-end">
+              <button tabindex="0" class="btn btn-sm btn-primary flex items-center space-x-2 hover-glow">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                <span>Login</span>
+              </button>
+              <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li>
+                  <a class="hover-glow" href="{% url 'admin_login' %}">Admin Login</a>
+                </li>
+                <li>
+                  <a class="hover-glow" href="{% url 'organizer_login' %}">Organizer Login</a>
+                </li>
+                <li>
+                  <a class="hover-glow" href="{% url 'user_login' %}">User Login</a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Register Dropdown -->
+            <div class="dropdown dropdown-end">
+              <button tabindex="0" class="btn btn-sm btn-secondary flex items-center space-x-2 hover-glow">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Register</span>
+              </button>
+              <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li>
+                  <a class="hover-glow" href="{% url 'register_organizer' %}">Organizer Register</a>
+                </li>
+                <li>
+                  <a class="hover-glow" href="{% url 'register_regular' %}">User Register</a>
+                </li>                
+              </ul>
+            </div>
           </div>
         {% endif %}
       </div>
@@ -214,6 +232,7 @@
     <!-- Main Content -->
     <main class="flex-grow p-6">
       {% block content %}
+
       {% endblock %}
     </main>
 
