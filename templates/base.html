@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,106 +9,201 @@
         Clubs
       {% endblock %}
     </title>
-    <link href="{% static 'css/output.css' %}" rel="stylesheet" />
-    {% comment %}Tailwind CSS + daisyUI via CDN{% endcomment %}
+
+    <!-- TailwindCSS and DaisyUI -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.20/dist/full.min.css" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Custom CSS -->
+    <link href="{% static 'css/output.css' %}" rel="stylesheet" />
+
+    <style>
+      .glass {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
+      }
+
+      .hover-glow {
+        transition: all 0.3s ease;
+      }
+
+      .hover-glow:hover {
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.6), 0 0 20px rgba(59, 130, 246, 0.4);
+        transform: translateY(-2px);
+      }
+
+      /* Ensuring text is visible on white background */
+      body {
+        background-color: #f8fafc; /* White background */
+        color: #333; /* Dark text for better contrast */
+      }
+
+      .navbar, .footer {
+        background-color: #ffffff;
+      }
+
+      .navbar a, .navbar li a {
+        color: #333;
+      }
+
+      .dropdown-content a {
+        color: #333;
+      }
+
+      .dropdown-content a:hover {
+        color: #fff;
+        background-color: #2563eb; /* Tailwind Blue */
+      }
+    </style>
+
     <script>
       tailwind.config = {
-        plugins: [tailwindcss.daisyui]
-      }
+        theme: {
+          extend: {}
+        },
+        plugins: [daisyui]
+      };
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/daisyui@latest"></script>
   </head>
-  <body class="bg-base-200 min-h-screen flex flex-col">
-    {% comment %} <nav class="bg-base-100 shadow-md p-4 flex justify-between items-center">
-      <a href="{% url 'dashboard' %}" class="text-xl font-bold">JU Clubs</a>
-      {% if user.is_authenticated %}
-        <div class="space-x-4">
-          <span class="text-sm text-gray-500">Hi, {{ user.username }}</span>
-          <!-- Logout Form -->
-          <form action="{% url 'logout' %}" method="POST" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-error">Logout</button>
-          </form>
-        </div>
-      {% endif %}
-    </nav> {% endcomment %}
-    <div class="navbar bg-base-100 shadow-sm">
+
+  <body class="min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <div class="navbar bg-base-100 shadow-sm px-4">
+      <!-- Navbar Start (Logo + Drawer) -->
       <div class="navbar-start">
         <div class="drawer">
           <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-          <div class="drawer-content">
-            <!-- Hamburger Icon triggers drawer -->
-            <label for="my-drawer" class="btn btn-ghost lg:hidden">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
-              </svg>
-            </label>
-            <a class="btn btn-ghost text-xl">JuClubs</a>
+
+          <div class="drawer-content flex items-center space-x-2">
+            <!-- Hamburger Icon -->
+            <label for="my-drawer" class="btn btn-ghost lg:hidden"><i class="fa-solid fa-bars text-xl"></i></label>
+
+            <!-- Logo -->
+            <a class="btn btn-ghost normal-case text-2xl font-bold">JuClubs</a>
           </div>
+
+          <!-- Sidebar Drawer -->
           <div class="drawer-side z-50">
             <label for="my-drawer" class="drawer-overlay"></label>
-            <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-              <!-- Sidebar content here -->
-              <li>
-                <a href="#">Sidebar Item 1</a>
-              </li>
-              <li>
-                <a href="#">Sidebar Item 2</a>
-              </li>
-            </ul>
+
+            <div class="flex flex-col justify-between h-full w-80 bg-base-200">
+              <ul class="menu p-4 flex-grow text-base-content space-y-2">
+                <!-- Sidebar Items -->
+                <li>
+                  <a class="hover-glow" href="#"><i class="fa-solid fa-house mr-2"></i>Home</a>
+                </li>
+                <li>
+                  <a class="hover-glow" href="#"><i class="fa-solid fa-users mr-2"></i>Members</a>
+                </li>
+                <li>
+                  <a class="hover-glow" href="#"><i class="fa-solid fa-calendar-days mr-2"></i>Events</a>
+                </li>
+              </ul>
+
+              {% if not user.is_authenticated %}
+                <div class="p-4 border-t border-base-300">
+                  <p class="mb-2 font-semibold text-gray-700">Login</p>
+                  <ul class="menu space-y-1">
+                    <li>
+                      <a class="hover-glow" href="{% url 'admin_login' %}"><i class="fa-solid fa-user-shield mr-2"></i>Admin Login</a>
+                    </li>
+                    <li>
+                      <a class="hover-glow" href="{% url 'organizer_login' %}"><i class="fa-solid fa-user-gear mr-2"></i>Organizer Login</a>
+                    </li>
+                    <li>
+                      <a class="hover-glow" href="{% url 'user_login' %}"><i class="fa-solid fa-user mr-2"></i>User Login</a>
+                    </li>
+                  </ul>
+                </div>
+              {% else %}
+                <div class="p-4 border-t border-base-300 flex items-center space-x-2">
+                  <form action="{% url 'logout' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-error w-full hover-glow">
+                      <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
+                    </button>
+                  </form>
+                </div>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- Navbar Center (Desktop Menu) -->
       <div class="navbar-center hidden lg:flex">
-        <ul class="menu menu-horizontal px-1">
+        <ul class="menu menu-horizontal px-1 space-x-2">
           <li>
-            <a>Item 1</a>
+            <a class="hover-glow" href="#"><i class="fa-solid fa-house mr-2"></i>Home</a>
           </li>
           <li>
-            <details>
-              <summary>Parent</summary>
-              <ul class="p-2">
-                <li>
-                  <a>Submenu 1</a>
-                </li>
-                <li>
-                  <a>Submenu 2</a>
-                </li>
-              </ul>
-            </details>
+            <a class="hover-glow" href="#"><i class="fa-solid fa-users mr-2"></i>Members</a>
           </li>
           <li>
-            <a>Item 3</a>
+            <a class="hover-glow" href="#"><i class="fa-solid fa-calendar-days mr-2"></i>Events</a>
           </li>
         </ul>
       </div>
 
-      <div class="navbar-end">
+      <!-- Navbar End (Profile/Login) -->
+      <div class="navbar-end flex items-center space-x-4">
         {% if user.is_authenticated %}
-          <div class="space-x-4">
-            <span class="text-sm text-gray-500">Hi, {{ user.username }}</span>
-            <form action="{% url 'logout' %}" method="POST" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-error">Logout</button>
-            </form>
+          <!-- User Profile Dropdown -->
+          <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+              <div class="w-12 h-12 rounded-full relative">
+                <i class="fa-solid fa-circle-user text-4xl text-gray-600"></i>
+                <div class="absolute bottom-0 right-0 bg-white rounded-full p-1">
+                  <i class="fa-solid fa-angle-down text-black text-xs"></i>
+                </div>
+              </div>
+            </label>
+
+            <!-- Dropdown Content -->
+            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-48">
+              <li>
+                <a class="justify-between">
+                  <i class="fa-solid fa-user mr-2"></i>Profile
+                  <span class="badge badge-info">New</span>
+                </a>
+              </li>
+              <li>
+                <a class="hover-glow"><i class="fa-solid fa-gear mr-2"></i>Settings</a>
+              </li>
+              <li>
+                <form action="{% url 'logout' %}" method="POST">
+                  {% csrf_token %}
+                  <button type="submit" class="w-full text-left flex items-center hover-glow">
+                    <i class="fa-solid fa-right-from-bracket mr-2"></i>Logout
+                  </button>
+                </form>
+              </li>
+            </ul>
           </div>
         {% else %}
-          <!-- Login Button -->
+          <!-- Login Dropdown for Guests -->
           <div class="dropdown dropdown-end">
-            <button tabindex="0" class="btn btn-sm btn-primary">Login</button>
+            <button tabindex="0" class="btn btn-sm btn-primary flex items-center space-x-2 hover-glow">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i>
+              <span>Login</span>
+            </button>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
               <li>
-                <a href="{% url 'admin_login' %}">Admin Login</a>
+                <a class="hover-glow" href="{% url 'admin_login' %}">Admin Login</a>
               </li>
               <li>
-                <a href="{% url 'organizer_login' %}">Organizer Login</a>
+                <a class="hover-glow" href="{% url 'organizer_login' %}">Organizer Login</a>
               </li>
               <li>
-                <a href="{% url 'user_login' %}">User Login</a>
+                <a class="hover-glow" href="{% url 'user_login' %}">User Login</a>
               </li>
             </ul>
           </div>
@@ -116,12 +211,13 @@
       </div>
     </div>
 
+    <!-- Main Content -->
     <main class="flex-grow p-6">
       {% block content %}
-
       {% endblock %}
     </main>
 
+    <!-- Footer -->
     <footer class="bg-base-100 text-center p-4 text-sm text-gray-500">&copy; 2025 Jahangirnagar University Club Management System</footer>
   </body>
 </html>
