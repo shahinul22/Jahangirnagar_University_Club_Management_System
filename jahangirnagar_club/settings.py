@@ -34,6 +34,8 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'clubs.CustomUser'
 
 
+
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

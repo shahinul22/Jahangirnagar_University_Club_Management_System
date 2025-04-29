@@ -42,19 +42,19 @@ def register_organizer(request):
     return render(request, 'clubs/register_organizer.html', {'form': form})
 
 
-def register_regular(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
+from .forms import RegularUserRegisterForm
 
+def register_regular(request):
     if request.method == 'POST':
         form = RegularUserRegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.is_regular_user = True  # or whatever flag you use
+            user.save()
             login(request, user)
-            return redirect('dashboard')
+            return redirect('regular_dashboard')  # adjust redirect
     else:
         form = RegularUserRegisterForm()
-
     return render(request, 'clubs/register_regular.html', {'form': form})
 
 
