@@ -1,51 +1,123 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}Register - Organizer{% endblock %}
 
 {% block content %}
-  <!-- Registration Container -->
-  <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md">
-    <h2 class="text-2xl font-bold mb-4 text-center text-gray-800">Register as Organizer</h2>
-    
-    <!-- Registration Form -->
-    <form method="POST" class="space-y-4">
-      {% csrf_token %}
-      
-      <!-- Displaying Form Errors -->
-      <div class="text-red-500">
-        {{ form.non_field_errors }}
+<div class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-3xl overflow-hidden flex flex-col lg:flex-row">
+
+    <!-- Left Info Image -->
+    <div class="hidden lg:flex lg:w-1/2 bg-blue-100 p-10 items-center justify-center">
+      <div class="text-center">
+        <img src="https://i.ibb.co.com/N2Gj7pgZ/registation.jpg" alt="Club" class="mx-auto mb-6 w-20 h-20" />
+        <h2 class="text-2xl font-semibold text-blue-800 mb-2">Club Registration</h2>
+        <p class="text-gray-700">Provide complete details so our admin can approve your organizer request faster.</p>
       </div>
-      
-      <!-- Render Form Fields -->
-      {% for field in form %}
-        <div class="mb-4">
-          <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <p class="text-red-500 text-sm">{{ field.errors.0 }}</p>
-          {% endif %}
-        </div>
-      {% endfor %}
-      
-      <!-- Password Conditions Section -->
-      <div class="text-sm text-gray-600 mt-2">
-        <ul class="list-disc pl-5">
-          <li>Password must be at least 8 characters long.</li>
-          <li>Password must include at least one letter, one number, and one special character.</li>
-          <li>Password cannot be entirely numeric or a commonly used password.</li>
+    </div>
+
+    <!-- Right Form -->
+    <div class="w-full lg:w-1/2 p-8 sm:p-10">
+      <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Organizer Registration</h2>
+
+      <!-- Rules -->
+      <div class="mb-6 p-5 bg-yellow-50 border border-yellow-300 rounded-lg shadow-sm text-sm text-gray-700">
+        <h3 class="text-lg font-semibold mb-2 text-yellow-800">Club Registration Rules</h3>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>The club must be affiliated with a department or hall at Jahangirnagar University.</li>
+          <li>Each club must have a unique theme and purpose.</li>
+          <li>Contact email should belong to the primary organizer or faculty advisor.</li>
+          <li>All fields must be filled out honestly and completely.</li>
+          <li>Requests may take up to 48 hours for admin approval.</li>
+          <li>Admins can approve or reject submissions at their discretion.</li>
         </ul>
       </div>
-      
-      <!-- Submit Button -->
-      <button type="submit" class="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-        Register
-      </button>
-      
-      <!-- Redirect to Login -->
-      <p class="text-center text-sm mt-4">Already have an account? 
-        <a href="{% url 'organizer_login' %}" class="text-blue-500 hover:text-blue-600">Login here</a>
-      </p>
-    </form>
-  </div>
 
+      <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="text-red-500 text-sm mb-3">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <!-- USER ACCOUNT INFO -->
+        <div class="border-b pb-4">
+          <h3 class="text-lg font-semibold text-gray-700 mb-2">Account Info</h3>
+          {% for field in form %}
+            {% if field.name in 'username email password1 password2' %}
+              <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                  {{ field.label }}
+                </label>
+                {% render_field field class="w-full px-4 py-2 border border-gray-300 bg-gray-50 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder=field.label %}
+                {% if field.errors %}
+                  <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- CLUB INFO -->
+        <div class="border-b pb-4">
+          <h3 class="text-lg font-semibold text-gray-700 mb-2 mt-6">Club Details</h3>
+          {% for field in form %}
+            {% if field.name in 'club_name club_description club_category mission_statement year_established website logo constitution' %}
+              <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                  {{ field.label }}
+                </label>
+                {% render_field field class="w-full px-4 py-2 border border-gray-300 bg-gray-50 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder=field.label %}
+                {% if field.errors %}
+                  <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- CONTACT INFO -->
+        <div class="pb-4">
+          <h3 class="text-lg font-semibold text-gray-700 mb-2 mt-6">Primary Contact</h3>
+          {% for field in form %}
+            {% if field.name in 'contact_person_name contact_email contact_phone' %}
+              <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                  {{ field.label }}
+                </label>
+                {% render_field field class="w-full px-4 py-2 border border-gray-300 bg-gray-50 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder=field.label %}
+                {% if field.errors %}
+                  <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- PASSWORD REQUIREMENTS -->
+        <div class="text-sm text-gray-600 bg-blue-50 border border-blue-200 p-4 rounded-md">
+          <p class="font-medium mb-2">Password Requirements:</p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li>Minimum 8 characters</li>
+            <li>Include letters, numbers & symbols</li>
+            <li>Should not be too common or fully numeric</li>
+          </ul>
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition shadow-sm">
+          Submit Request
+        </button>
+
+        <!-- Login Link -->
+        <p class="text-center text-sm mt-4 text-gray-600">
+          Already registered?
+          <a href="{% url 'organizer_login' %}" class="text-blue-500 hover:underline">Login here</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

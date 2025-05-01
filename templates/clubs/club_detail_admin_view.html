@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Club Detail{% endblock %}
+
+{% block content %}
+{% if user.organizer_profile %}
+  <!-- Club Banner -->
+  <div class="w-full bg-blue-100 py-6 px-4 rounded-xl shadow mb-6 text-center">
+    {% if user.organizer_profile.logo %}
+      <img src="{{ user.organizer_profile.logo.url }}" alt="Club Logo" class="mx-auto h-24 w-24 rounded-full mb-4 object-cover">
+    {% endif %}
+    <h1 class="text-3xl font-bold text-blue-800">{{ user.organizer_profile.club_name }}</h1>
+    <p class="text-sm text-blue-700 mt-1">{{ user.organizer_profile.club_category|title }} Club</p>
+  </div>
+{% endif %}
+
+<!-- Organizer and Club Info -->
+<div class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow">
+  <h2 class="text-2xl font-bold mb-4 text-gray-800">Organizer: {{ user.username }}</h2>
+  <p class="text-gray-600 mb-2">Email: {{ user.email }}</p>
+
+  {% if user.organizer_profile %}
+    <div class="mt-4">
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">Club Information</h3>
+      <p><strong class="text-gray-700">Club Name:</strong> {{ user.organizer_profile.club_name }}</p>
+      <p><strong class="text-gray-700">Description:</strong> {{ user.organizer_profile.club_description }}</p>
+      <p><strong class="text-gray-700">Contact Person:</strong> {{ user.organizer_profile.contact_person_name }}</p>
+      <p><strong class="text-gray-700">Contact Email:</strong> {{ user.organizer_profile.contact_email }}</p>
+      <p><strong class="text-gray-700">Contact Phone:</strong> {{ user.organizer_profile.contact_phone }}</p>
+    </div>
+  {% else %}
+    <p class="text-red-600 mt-4">No organizer profile information available.</p>
+  {% endif %}
+
+  <a href="{% url 'approve_organizer' user.id %}" 
+     class="mt-6 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+    Approve Organizer
+  </a>
+</div>
+{% endblock %}

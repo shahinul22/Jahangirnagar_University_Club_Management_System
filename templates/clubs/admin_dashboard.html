@@ -3,19 +3,31 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
-<p>Welcome, Admin!</p>
+<div class="max-w-4xl mx-auto px-4 py-6">
+  <h1 class="text-3xl font-bold text-gray-800 mb-4">Admin Dashboard</h1>
+  <p class="text-gray-700 mb-6">Welcome, Admin! Review and manage pending club organizer requests below.</p>
 
-<h2 class="text-xl mt-6 mb-2">Pending Organizers</h2>
-<ul class="list-disc pl-5 space-y-2">
-    {% for user in pending %}
-        <li>
-            <span>{{ user.username }} ({{ user.email }})</span>
-            — <a href="{% url 'approve_organizer' user.id %}" class="text-blue-500 hover:underline">Approve</a>
-        </li>
-    {% empty %}
-        <li>No pending organizer requests.</li>
-    {% endfor %}
-</ul>
+  <div class="bg-white p-6 rounded-xl shadow-md">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Pending Organizer Requests</h2>
 
+    {% if pending %}
+      <ul class="space-y-4">
+        {% for user in pending %}
+          <li class="flex justify-between items-center border-b pb-2">
+            <div>
+              <p class="font-medium text-gray-900">{{ user.username }}</p>
+              <p class="text-sm text-gray-500">{{ user.email }}</p>
+            </div>
+            <a href="{% url 'approve_organizer' user.id %}"
+               class="inline-block bg-blue-500 text-white px-4 py-1.5 rounded-md text-sm hover:bg-blue-600 transition">
+              View Club Details
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-600">No pending organizer requests.</p>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
